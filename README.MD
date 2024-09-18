@@ -1,22 +1,12 @@
-\section*{Lecture Content}
+# $$ Lecture \space Content $$
+## ${\color{auto}\space  \textit{ Lecture 1}}
+## ${\color{auto}\space \textbf{\textit{ lec1.dir }}}
+### ${\color{auto}\space  \textbf{\textit{ Files }}}
+$$None$$ 
 
-\subsection*{\textit{Lecture 1}}
-\begin{itemize}
-    \item \textbf{\textit{lec1.dir}} \\
-    \url{haskell/lecs/lec1}
-\end{itemize}
-\textbf{Files:} \\
-None
+## ${\color{auto}\space  \textit{ Lecture 2}}
+## ${\color{auto}\space \textbf{\textit{ lec2.dir }}}
+### ${\color{auto}\space  \textbf{\textit{ Files }}}
+    
+${\color{auto}\space \textbf{\textit{ ex1.hs }}} ${\color{auto}\space \small{\textbf{\textit{ ex1.md }}}}$
 
-\subsection*{\textit{Lecture 2}}
-\begin{itemize}
-    \item \textbf{\textit{lec2.dir}} \\
-    \url{haskell/lecs/lec2}
-\end{itemize}
-\textbf{Files:}
-\begin{itemize}
-    \item \textbf{\textit{ex1.hs}} \\
-    \url{haskell/lecs/lec2/ex1.hs}
-    \item \small{\textbf{\textit{ex1.md}}} \\
-    \url{haskell/lecs/lec2/ex1.md}
-\end{itemize}
