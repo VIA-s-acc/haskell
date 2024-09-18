@@ -1,13 +1,14 @@
-# $ Lecture \space Content $
-## $${\color{auto}\space  \textit{ Lecture 1}\\}$$
- [$${\color{auto}\space  \textbf{\textit{ lec1.dir }}\\}$$](haskell/lecs/lec1)
-### $${\color{auto}\space  \textbf{\textit{ Files }}\\}$$         
-$$None$$ 
+# Lecture Content
+## Lecture 1
+### Dir
+- [dir](haskell/lecs/lec1)
+### Files
+- None
 
+## Lecture 2
 
-## $${\color{auto}\space  \textit{ Lecture 2}\\}$$
-[$${\color{auto}\space  \textbf{\textit{ lec2.dir }}\\}$$](haskell/lecs/lec2)
-### $${\color{auto}\space  \textbf{\textit{ Files }}\\}$$ 
-    
-[$${\color{auto}\space  \textbf{\textit{ ex1.hs }}\\}$$](haskell/lecs/lec2/ex1.hs)
-[$${\color{auto}\space  \small{\textbf{\textit{ ex1.md }}}\\}$$](haskell/lecs/lec2/ex1.hs)
+### Dir
+- [dir](haskell/lecs/lec2)
+### Files
+- [.hs](haskell/lecs/lec2/ex1.hs)
+- [.md](haskell/lecs/lec2/README.MD)
