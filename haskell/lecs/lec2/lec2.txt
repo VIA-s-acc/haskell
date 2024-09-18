@@ -1,0 +1,90 @@
+
+C:\Users\akhro>ghci
+GHCi, version 9.4.8: https://www.haskell.org/ghc/  :? for help
+ghci> let a = [[1,2],[3,4]]
+ghci> let a [['a',2],[3,4]]
+
+<interactive>:2:22: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+ghci> let a = [['a','b'],['f','g']]
+ghci> a
+["ab","fg"]
+ghci> a = "hello"
+ghci> a = 'hello
+
+<interactive>:6:5: error:
+    * Syntax error on 'hello
+      Perhaps you intended to use TemplateHaskell or TemplateHaskellQuotes
+    * In the Template Haskell quotation 'hello
+ghci> a = 'hello'
+
+<interactive>:7:5: error:
+    * Syntax error on 'hello'
+      Perhaps you intended to use TemplateHaskell or TemplateHaskellQuotes
+    * In the Template Haskell quotation 'hello'
+ghci> let a = ('a', 12)
+ghci> a
+('a',12)
+ghci> a!!1
+
+<interactive>:10:1: error:
+    * Couldn't match expected type: [a]
+                  with actual type: (Char, b0)
+    * In the first argument of `(!!)', namely `a'
+      In the expression: a !! 1
+      In an equation for `it': it = a !! 1
+    * Relevant bindings include it :: a (bound at <interactive>:10:1)
+ghci> a!!0
+
+<interactive>:11:1: error:
+    * Couldn't match expected type: [a]
+                  with actual type: (Char, b0)
+    * In the first argument of `(!!)', namely `a'
+      In the expression: a !! 0
+      In an equation for `it': it = a !! 0
+    * Relevant bindings include it :: a (bound at <interactive>:11:1)
+ghci> a0
+
+<interactive>:12:1: error:
+    Variable not in scope: a0
+    Suggested fix:
+      Perhaps use one of these:
+        `Ghci1.a' (imported from Ghci1), `Ghci2.a' (imported from Ghci2),
+        `Ghci4.a' (imported from Ghci4)
+ghci> let a = ('a', 12, "edro")
+ghci> let a = ('a', 12)
+ghci> fst a
+'a'
+ghci> last a
+
+<interactive>:16:6: error:
+    * Couldn't match expected type: [a]
+                  with actual type: (Char, b0)
+    * In the first argument of `last', namely `a'
+      In the expression: last a
+      In an equation for `it': it = last a
+    * Relevant bindings include it :: a (bound at <interactive>:16:1)
+ghci> snd a
+12
+ghci> last - первый элемент, snd - второй.
+
+<interactive>:18:22: error: parse error on input `,'
+ghci> let a = "last - первый элемент, snd - второй."
+ghci> a
+"last - \1087\1077\1088\1074\1099\1081 \1101\1083\1077\1084\1077\1085\1090, snd - \1074\1090\1086\1088\1086\1081."
+ghci> let a = ('a', [1,2,3])
+ghci> a
+('a',[1,2,3])
+ghci> snd
+
+<interactive>:23:1: error:
+    * No instance for (Show ((a0, b0) -> b0))
+        arising from a use of `print'
+        (maybe you haven't applied a function to enough arguments?)
+    * In a stmt of an interactive GHCi command: print it
+ghci> snd a
+[1,2,3]
+ghci> 1:2:3:[]
+[1,2,3]
+ghci> let a = "заводим элементы в список"
+ghci> ghci> a!!1                                                                                                        
