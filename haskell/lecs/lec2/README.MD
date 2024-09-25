@@ -1,6 +1,5 @@
 ### functions
-[README](../../../README.MD)
-[file](ex1.hs)
+[README](../../../README.MD) [File](ex1.hs)
 - `myhead`: 
 ```
 Returns the first element of the list. If the list is empty, an error is thrown.
