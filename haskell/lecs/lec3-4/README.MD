@@ -50,3 +50,48 @@ Calculate the transpose of a matrix.
 ``` 
 Calculate the inverse of a matrix.
 ```
+- `getPivotStep`:
+```
+Get the pivot step of a matrix.
+```
+- `subtractRow`:
+```
+Subtract a row from another row.
+```
+- `applyGaussStep`:
+```
+Apply a Gauss step to a matrix.
+```
+- `swapRows`:
+```
+Swap two rows in a matrix.
+```
+- `getPivot`:
+```
+Get the pivot of a matrix.
+```
+- `getLen`:
+```
+Get the length of a list.
+```
+- ```gaussElimination_```:
+```
+Gauss elimination (USE gaussElimination)
+```
+- `gaussElimination`:
+```
+Gauss elimination
+```
+- `isZeroRow`:
+```
+Check if a row is a zero row.
+```
+- `replaceSmallNumbers`:
+```
+Replace small numbers with 0.
+```
+- `getRank`:
+```
+Get the rank of a matrix.
+```
+

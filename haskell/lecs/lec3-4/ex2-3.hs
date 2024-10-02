@@ -1,4 +1,5 @@
 import Data.Ratio
+import Data.Text (replace)
 -- просто вхождение (порядок не важен)
 isSubListNO :: [Int] -> [Int] -> Bool
 isSubListNO [] ys = True
@@ -73,6 +74,87 @@ inverse matrix
     | det == 0 = error "matrix is not invertible"
     | otherwise = [ [ ( (-1) ^ (i + j + 2) ) * determinant (getMinor j i matrix) / det | j <- [0..(length matrix - 1)] ] | i <- [0..(length matrix - 1)] ]
     where det = determinant matrix
-        
 
 
+
+getPivotStep :: (Num a, Eq a) => a -> [a] -> a
+getPivotStep num [] = 0
+getPivotStep num (x:xs)
+    | num == 1 = x
+    | otherwise = getPivotStep (num-1) xs
+
+subtractRow :: Num t => t -> [t] -> [t] -> [t]
+subtractRow _ [] [] = []
+subtractRow coeff (x:xs) (y:ys) = (x - coeff * y) : subtractRow coeff xs ys
+
+applyGaussStep :: (Eq a, Num a, Fractional a) => a -> a -> [a] -> [[a]] -> [[a]]
+applyGaussStep pivot zcounter [] rows = rows
+applyGaussStep pivot zcounter pivotRow rows = map ( \row -> subtractRow ( getPivotStep zcounter row / pivot ) row pivotRow) rows 
+
+swapRows :: (Eq a, Num a) => [[a]] -> [[a]]
+swapRows (row:rows)
+    | head row /= 0 = row : rows  
+    | otherwise =
+        let nonZeroRows = filter (\r -> head r /= 0) rows  
+        in if null nonZeroRows 
+            then row : rows  
+            else let (firstNonZero:_) = nonZeroRows 
+                    in firstNonZero : replaceRow rows firstNonZero row
+                    where 
+                        replaceRow [] _ _ = []
+                        replaceRow (r:rs) firstNonZero row2swap
+                            | r == firstNonZero = row2swap : rs
+                            | otherwise = r : replaceRow rs firstNonZero row2swap
+
+getPivot :: (Num a, Eq a) => [a] -> a
+getPivot [] = 0
+getPivot (x:xs) 
+    | x /= 0 = x
+    | otherwise = getPivot xs
+
+getLen :: (Num a) => [a] -> a
+getLen = foldr (\ x -> (+) 1) 0
+
+gaussElimination_ :: (Ord a, Fractional a) => a -> [[a]] -> [[a]]
+gaussElimination_ _ [] = []
+gaussElimination_ zcounter matrix =
+    let swappedMatrix = replaceSmallNumbers 1e-15 (swapRows matrix) 
+        row = head swappedMatrix
+        rows = tail swappedMatrix
+        pivot = getPivot row
+        in if pivot == 0 || zcounter == getLen row then
+                swappedMatrix
+            else
+                row
+                : gaussElimination_
+                    (zcounter + 1) (applyGaussStep pivot zcounter row rows)
+
+gaussElimination :: (Ord b, Fractional b) => [[b]] -> [[b]]
+gaussElimination [] = error "empty matrix"
+gaussElimination matrix = gaussElimination_ 1 matrix
+
+isZeroRow :: (Eq a, Num a) => [a] -> Bool
+isZeroRow = all (== 0)
+
+replaceSmallNumbers :: (Ord b, Num b) => b -> [[b]] -> [[b]]
+replaceSmallNumbers epsilon = map (map (\ x -> if abs x < epsilon then 0 else x))
+
+getRank :: (Ord a, Fractional a) => [[a]] -> Int
+getRank [] = 0
+getRank matrix = 
+    let gaussMatrix = gaussElimination matrix
+    in length (filter ( not . isZeroRow ) gaussMatrix)
+
+main :: IO ()
+main = do
+    -- let matrix = [[1, 1, -1, -1],   
+    --               [0, -1, 2, -1],
+    --               [0, 0, 2, -1]]
+    let matrix = [[3,2,-5,7],
+                  [2,-1,3,6],
+                  [1,2,-1,5],
+                  [1,1,-1,4]]
+    let result = gaussElimination_ 1 matrix
+    mapM_ print result
+    -- let rank = getRank matrix
+    -- print rank

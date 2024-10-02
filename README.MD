@@ -13,7 +13,7 @@
 - [.hs](haskell/lecs/lec2/ex1.hs)
 - [.md](haskell/lecs/lec2/README.MD)
 
-## Lecture 3
+## Lecture 3-4
 
 ### Dir
 - [dir](haskell/lecs/lec3)
