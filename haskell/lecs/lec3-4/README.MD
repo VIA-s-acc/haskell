@@ -94,4 +94,16 @@ Replace small numbers with 0.
 ```
 Get the rank of a matrix.
 ```
-
+- `augmentMatrix`:
+```
+Augment a matrix with a vector.
+A, b -> (A|b)
+```
+- `backSubstitution`:
+```
+Back substitution.
+```
+- `solveGauss`:
+```
+Solve a system of linear equations using Gauss elimination.
+```

@@ -1,5 +1,6 @@
 import Data.Ratio
 import Data.Text (replace)
+import GHC.Base (augment)
 -- просто вхождение (порядок не важен)
 isSubListNO :: [Int] -> [Int] -> Bool
 isSubListNO [] ys = True
@@ -77,7 +78,7 @@ inverse matrix
 
 
 
-getPivotStep :: (Num a, Eq a) => a -> [a] -> a
+getPivotStep :: (Num a, Eq a) => Int -> [a] -> a
 getPivotStep num [] = 0
 getPivotStep num (x:xs)
     | num == 1 = x
@@ -87,24 +88,38 @@ subtractRow :: Num t => t -> [t] -> [t] -> [t]
 subtractRow _ [] [] = []
 subtractRow coeff (x:xs) (y:ys) = (x - coeff * y) : subtractRow coeff xs ys
 
-applyGaussStep :: (Eq a, Num a, Fractional a) => a -> a -> [a] -> [[a]] -> [[a]]
+applyGaussStep :: (Eq a, Num a, Fractional a) => a -> Int -> [a] -> [[a]] -> [[a]]
 applyGaussStep pivot zcounter [] rows = rows
 applyGaussStep pivot zcounter pivotRow rows = map ( \row -> subtractRow ( getPivotStep zcounter row / pivot ) row pivotRow) rows 
 
+getFirstNonZeroIndex :: (Eq a1, Num a2, Num a1) => [a1] -> a2
+getFirstNonZeroIndex [] = -1    
+getFirstNonZeroIndex (x:xs)
+    | x /= 0 = 0
+    | otherwise = 1 + getFirstNonZeroIndex xs
+
 swapRows :: (Eq a, Num a) => [[a]] -> [[a]]
+swapRows [] = []
+swapRows [[]] = [[]]
 swapRows (row:rows)
+    | null row = []
     | head row /= 0 = row : rows  
     | otherwise =
-        let nonZeroRows = filter (\r -> head r /= 0) rows  
-        in if null nonZeroRows 
+        let nonZeroRows = filter (\r -> head r /= 0) rows
+            checkSecondElement r = (length r > 1 && r !! 1 /= 0)
+            nonZeroSecondRows = filter checkSecondElement rows
+        in if null nonZeroRows && null nonZeroSecondRows 
             then row : rows  
-            else let (firstNonZero:_) = nonZeroRows 
+            else if not (null nonZeroRows) 
+                then let (firstNonZero:_) = nonZeroRows 
                     in firstNonZero : replaceRow rows firstNonZero row
-                    where 
-                        replaceRow [] _ _ = []
-                        replaceRow (r:rs) firstNonZero row2swap
-                            | r == firstNonZero = row2swap : rs
-                            | otherwise = r : replaceRow rs firstNonZero row2swap
+                else let (firstNonZeroSecond:_) = nonZeroSecondRows
+                    in firstNonZeroSecond : replaceRow rows firstNonZeroSecond row
+        where 
+            replaceRow [] _ _ = []
+            replaceRow (r:rs) firstNonZero row2swap
+                | r == firstNonZero = row2swap : rs
+                | otherwise = r : replaceRow rs firstNonZero row2swap
 
 getPivot :: (Num a, Eq a) => [a] -> a
 getPivot [] = 0
@@ -112,26 +127,33 @@ getPivot (x:xs)
     | x /= 0 = x
     | otherwise = getPivot xs
 
-getLen :: (Num a) => [a] -> a
+getLen :: (Num a) => [a] -> Int
 getLen = foldr (\ x -> (+) 1) 0
 
-gaussElimination_ :: (Ord a, Fractional a) => a -> [[a]] -> [[a]]
-gaussElimination_ _ [] = []
-gaussElimination_ zcounter matrix =
+gaussElimination_ :: (Ord a, Fractional a) => Int -> Int -> [[a]] -> [[a]]
+gaussElimination_ _ _ [] = []
+gaussElimination_ _ zcounter matrix =
     let swappedMatrix = replaceSmallNumbers 1e-15 (swapRows matrix) 
-        row = head swappedMatrix
-        rows = tail swappedMatrix
-        pivot = getPivot row
-        in if pivot == 0 || zcounter == getLen row then
-                swappedMatrix
-            else
-                row
-                : gaussElimination_
-                    (zcounter + 1) (applyGaussStep pivot zcounter row rows)
+        in if null swappedMatrix then
+            matrix
+        else   
+            let row = head swappedMatrix
+                rows = tail swappedMatrix
+                pivot = getPivot row 
+            in if pivot == 0 then
+                    swappedMatrix 
+                else
+                    let firstNonZero = getFirstNonZeroIndex row  
+                    in 
+                        let updatedRows = row : applyGaussStep (pivot) (firstNonZero+1) row rows
+                            reducedRows = map (drop 1) (drop 1  updatedRows)
+                            gaussedMinor = gaussElimination_  (zcounter + 1) 1 reducedRows
+                            restoredMatrix = take zcounter  updatedRows ++ map (replicate zcounter 0 ++) gaussedMinor
+                        in restoredMatrix 
 
 gaussElimination :: (Ord b, Fractional b) => [[b]] -> [[b]]
 gaussElimination [] = error "empty matrix"
-gaussElimination matrix = gaussElimination_ 1 matrix
+gaussElimination matrix = gaussElimination_ 0 1 matrix
 
 isZeroRow :: (Eq a, Num a) => [a] -> Bool
 isZeroRow = all (== 0)
@@ -145,16 +167,41 @@ getRank matrix =
     let gaussMatrix = gaussElimination matrix
     in length (filter ( not . isZeroRow ) gaussMatrix)
 
+augmentMatrix  :: (Ord a, Fractional a) => [[a]] -> [a] -> [[a]]
+augmentMatrix  [[]] [] = error "empty matrix and vector"
+augmentMatrix  [[]] _ = error "empty matrix"
+augmentMatrix  _ [] = error "empty vector"
+augmentMatrix  matrix vector = zipWith (\row b -> row ++ [b]) matrix vector
+
+backSubstitution :: (Fractional a, Eq a) => [[a]] -> [a]
+backSubstitution matrix = reverse (foldl solveRow [] (reverse matrix))
+    where
+        solveRow :: (Fractional a, Eq a) => [a] -> [a] -> [a]
+        solveRow sol row =
+            let knownValues = zipWith (*) sol (drop 1 (reverse row))
+                rhs = last row - sum knownValues
+                pivot = row !! (length row - 2 - length sol)
+            in  sol ++ [rhs / pivot]
+
+solveGauss :: (Ord a, Fractional a) => [[a]] -> [a] -> [a]
+solveGauss matrix vector =
+    let augmentedMatrix = augmentMatrix matrix vector
+        matrixRank = getRank matrix
+        augmentedRank = getRank augmentedMatrix
+        in if matrixRank == augmentedRank then
+            let gaussMatrix = gaussElimination augmentedMatrix
+            in backSubstitution gaussMatrix
+        else error "No solution | rank(A) != rank(A|b)"
+    
+    
 main :: IO ()
 main = do
     -- let matrix = [[1, 1, -1, -1],   
     --               [0, -1, 2, -1],
     --               [0, 0, 2, -1]]
-    let matrix = [[3,2,-5,7],
-                  [2,-1,3,6],
-                  [1,2,-1,5],
-                  [1,1,-1,4]]
-    let result = gaussElimination_ 1 matrix
+    let matrix =     [[0 ,2 ,1 ,6],[0,0,-1,5],[1,4,-1,4],[1,2,3,4],[0,0,0,1],[2,3,0,0]]
+    -- let matrix = [[2, 3, -1, 1],[0,0,5,-4]]
+    let result = gaussElimination matrix
     mapM_ print result
-    -- let rank = getRank matrix
-    -- print rank
+    let rank = getRank matrix
+    print rank
